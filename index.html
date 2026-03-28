@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>いっくん専用ダッシュボード</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0f0f0f;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0 20px;
+            border-bottom: 1px solid #222;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+
+        .header .date {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        .goal-banner {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 1px solid #0f3460;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .goal-banner .label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: #4a9eff;
+            margin-bottom: 8px;
+        }
+
+        .goal-banner .text {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: #666;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        /* TODO */
+        .todo-list {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid #222;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .todo-item:last-child { border-bottom: none; }
+        .todo-item:hover { background: #222; }
+
+        .todo-item.done { opacity: 0.4; }
+        .todo-item.done .todo-text { text-decoration: line-through; }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #444;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .todo-item.done .checkbox {
+            background: #4a9eff;
+            border-color: #4a9eff;
+        }
+
+        .todo-item.done .checkbox::after {
+            content: '✓';
+            font-size: 11px;
+            color: white;
+        }
+
+        .todo-text { font-size: 15px; line-height: 1.4; }
+        .todo-tag {
+            margin-left: auto;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: #222;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .todo-tag.urgent { background: #2d1f1f; color: #ff6b6b; }
+        .todo-tag.today { background: #1f2d1f; color: #6bff6b; }
+
+        /* ニュース・台本候補 */
+        .news-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 10px;
+            border-left: 3px solid #333;
+            transition: border-color 0.2s;
+        }
+
+        .news-card:hover { border-left-color: #4a9eff; }
+        .news-card.pick { border-left-color: #4a9eff; }
+
+        .news-card .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .news-card .badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: #4a9eff22;
+            color: #4a9eff;
+        }
+
+        .news-card .badge.hot {
+            background: #ff6b6b22;
+            color: #ff6b6b;
+        }
+
+        .news-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .news-card p {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        .news-card .hook {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #222;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #ccc;
+            font-style: italic;
+        }
+
+        .news-card .hook::before {
+            content: '💬 フック案：';
+            font-style: normal;
+            color: #666;
+            font-size: 11px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* KPI */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .kpi-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+        }
+
+        .kpi-card .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4a9eff;
+        }
+
+        .kpi-card .kpi-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .kpi-card .kpi-target {
+            font-size: 11px;
+            color: #444;
+            margin-top: 2px;
+        }
+
+        /* 更新ボタン */
+        .update-info {
+            text-align: center;
+            font-size: 12px;
+            color: #444;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>おゲームですぞ / 司令部</h1>
+        <div class="date" id="today-date"></div>
+    </div>
+
+    <!-- 大目標 -->
+    <div class="goal-banner">
+        <div class="label">MISSION</div>
+        <div class="text">かっこいい大人になる。<br>自分の存在価値を証明する。</div>
+    </div>
+
+    <!-- KPI -->
+    <div class="section">
+        <div class="section-title">PROGRESS</div>
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-value" id="video-count">0</div>
+                <div class="kpi-label">投稿本数</div>
+                <div class="kpi-target">目標 50本</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="sub-count">0</div>
+                <div class="kpi-label">登録者数</div>
+                <div class="kpi-target">目標 1,000人</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="days-count">0</div>
+                <div class="kpi-label">継続日数</div>
+                <div class="kpi-target">毎日続ける</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TODO -->
+    <div class="section">
+        <div class="section-title">TODAY'S TODO</div>
+        <div class="todo-list">
+            <div class="todo-item" onclick="toggleTodo(this)">
+                <div class="checkbox"></div>
+                <div class="todo-text">風邪を治す（最優先）</div>
+                <span class="todo-tag urgent">今日</span>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+                <div class="checkbox"></div>
+                <div class="todo-text">#001 マイクラ 撮影・編集・公開</div>
+                <span class="todo-tag today">今週</span>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+                <div class="checkbox"></div>
+                <div class="todo-text">#002 宮崎英高 撮影</div>
+                <span class="todo-tag today">今週</span>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+                <div class="checkbox"></div>
+                <div class="todo-text">今日の台本候補をジャッジ（15分）</div>
+                <span class="todo-tag">毎日</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 台本候補 -->
+    <div class="section">
+        <div class="section-title">TODAY'S 台本候補</div>
+
+        <div class="news-card pick">
+            <div class="card-header">
+                <span class="badge hot">★ 推薦</span>
+                <span style="font-size:11px;color:#666;">2026.03.28</span>
+            </div>
+            <h3>トランプ政権があつ森を無断使用した話</h3>
+            <p>ホワイトハウス公式Xがどうぶつの森のキャラ・ロゴを無断投稿。任天堂の著作権管理の厳しさと、なぜゲームは政治に使われるのかを60秒で解説できる。</p>
+            <div class="hook">「アメリカの大統領府が、あつ森を無断で使った。」</div>
+        </div>
+
+        <div class="news-card">
+            <div class="card-header">
+                <span class="badge">候補②</span>
+                <span style="font-size:11px;color:#666;">2026.03.28</span>
+            </div>
+            <h3>PS5が4月2日から18,000円値上がりする理由</h3>
+            <p>円安・半導体コストの背景を60秒で。タイムリーでユウタ世代に直撃。</p>
+            <div class="hook">「4月2日から、PS5が18,000円値上がりします。」</div>
+        </div>
+
+        <div class="news-card">
+            <div class="card-header">
+                <span class="badge">候補③</span>
+                <span style="font-size:11px;color:#666;">2026.03.28</span>
+            </div>
+            <h3>ポケモンが"対戦だけ"のゲームを出した理由</h3>
+            <p>ポケモンチャンピオンズSwitch版が4月8日配信。任天堂のeスポーツ戦略を角度にできる。</p>
+            <div class="hook">「ポケモンが、冒険もストーリーも捨てたゲームを作った理由。」</div>
+        </div>
+    </div>
+
+    <div class="update-info">
+        毎朝更新 • AIが自動生成
+    </div>
+
+    <script>
+        // 今日の日付
+        const now = new Date();
+        const dateStr = now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日';
+        document.getElementById('today-date').textContent = dateStr;
+
+        // 継続日数（チャンネル開始日から）
+        const startDate = new Date('2026-03-28');
+        const diffDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+        document.getElementById('days-count').textContent = Math.max(0, diffDays);
+
+        // TODO トグル
+        function toggleTodo(el) {
+            el.classList.toggle('done');
+        }
+    </script>
+
+</body>
+</html>
